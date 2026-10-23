@@ -18,6 +18,12 @@ const textOf = (r) => r.content?.[0]?.text ?? "";
 const c = await session({ X402_PRIVATE_KEY: "" });
 const names = (await c.listTools()).tools.map((t) => t.name).sort();
 check("10 tools listed", names.length === 10, names.join(","));
+const local = (f) => JSON.parse(readFileSync(new URL("../" + f, import.meta.url), "utf8"));
+const manifest = local("manifest.json"), pkg = local("package.json"), card = local("server.json");
+check("bundle manifest lists exactly the tools the server registers", manifest.tools.map((t) => t.name).sort().join() === names.join(),
+  manifest.tools.map((t) => t.name).sort().join());
+check("one version everywhere (package, manifest, server.json)", [manifest.version, card.version, card.packages[0].version].every((v) => v === pkg.version),
+  [pkg.version, manifest.version, card.version, card.packages[0].version].join(" "));
 const wallet = (await c.listTools()).tools.find((t) => t.name === "hyperliquid_wallet");
 check("wallet tool requires an address", wallet?.inputSchema?.required?.includes("address"), JSON.stringify(wallet?.inputSchema));
 const info = await c.callTool({ name: "service_info", arguments: {} });
