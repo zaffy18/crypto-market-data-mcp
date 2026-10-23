@@ -65,7 +65,7 @@ async function call(path, query) {
   return paid.ok ? text(body) : fail(`Not answered (${paid.status}), not charged: ${body.error || JSON.stringify(body)}`);
 }
 
-const server = new McpServer({ name: "crypto-market-data", version: "0.1.1" });
+const server = new McpServer({ name: "crypto-market-data", version: "0.1.2" });
 const tokens = z.string().optional().describe("Comma-separated tickers such as BTC,ETH,SOL (up to 50). Empty means the top 50 coins.");
 const token = z.string().optional().describe("One ticker such as BTC");
 const limit = z.number().int().min(1).max(200).optional().describe("How many rows");

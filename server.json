@@ -7,12 +7,18 @@
     "url": "https://github.com/zaffy18/crypto-market-data-mcp",
     "source": "github"
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://crypto-market-data.zafermemon87.workers.dev/mcp"
+    }
+  ],
   "packages": [
     {
       "registryType": "npm",
       "identifier": "crypto-market-data-mcp",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "transport": {
         "type": "stdio"
       },

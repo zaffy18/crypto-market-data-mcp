@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "crypto-market-data",
   "display_name": "Crypto Market Data",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Live crypto market data and Hyperliquid wallet reports for AI agents, paid per call with x402.",
   "long_description": "Prices, derivatives, order books, liquidations, whale orders, news and sentiment for the top 50 coins, refreshed every minute from 24/7 monitoring of Binance spot and futures, Hyperliquid and 31 news sources, plus enriched reports for any Hyperliquid wallet. Each paid call costs USD 0.003 to 0.01 in USDC on Base, paid from your own wallet within hard spending caps. Without a wallet, prices and sentiment work free with data refreshed every 15 minutes. A call that fails is never charged.",
   "author": {

@@ -19,6 +19,14 @@ subscription, and a call that fails is never charged.
 
 Data refreshes every minute from 24/7 monitoring of Binance spot and futures, Hyperliquid and 31 news sources.
 
+## Connect without installing
+
+Remote MCP server (Streamable HTTP, no sign-up): `https://crypto-market-data.zafermemon87.workers.dev/mcp`
+
+Add it as a custom connector or remote server in Claude, ChatGPT, Cursor, VS Code or any MCP client. `prices_free`,
+`sentiment_free` and `service_info` are free. The other tools are paid per call with x402 over MCP, and clients built
+with [`@x402/mcp`](https://www.npmjs.com/package/@x402/mcp) pay automatically.
+
 ## Install
 
 Claude Desktop, one click: download

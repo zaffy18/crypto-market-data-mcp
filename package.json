@@ -1,6 +1,6 @@
 {
     "name":  "crypto-market-data-mcp",
-    "version":  "0.1.1",
+    "version":  "0.1.2",
     "type":  "module",
     "dependencies":  {
                          "@modelcontextprotocol/sdk":  "1.32.1",
