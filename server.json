@@ -1,0 +1,31 @@
+{
+    "$schema":  "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name":  "io.github.zaffy18/crypto-market-data",
+    "title":  "Crypto Market Data",
+    "description":  "Live crypto market data and Hyperliquid wallet reports for AI agents, paid per call with x402.",
+    "version":  "0.1.0",
+    "packages":  [
+                     {
+                         "registryType":  "npm",
+                         "identifier":  "crypto-market-data-mcp",
+                         "version":  "0.1.0",
+                         "transport":  {
+                                           "type":  "stdio"
+                                       },
+                         "environmentVariables":  [
+                                                      {
+                                                          "name":  "X402_PRIVATE_KEY",
+                                                          "description":  "Key of a wallet holding a little USDC on Base, used to pay per call",
+                                                          "isRequired":  false,
+                                                          "isSecret":  true
+                                                      },
+                                                      {
+                                                          "name":  "X402_MAX_TOTAL_USD",
+                                                          "description":  "Stop paying after this much per session (default 1.00)",
+                                                          "isRequired":  false,
+                                                          "isSecret":  false
+                                                      }
+                                                  ]
+                     }
+                 ]
+}

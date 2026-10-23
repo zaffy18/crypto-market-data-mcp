@@ -1,0 +1,44 @@
+{
+    "name":  "crypto-market-data-mcp",
+    "version":  "0.1.0",
+    "type":  "module",
+    "dependencies":  {
+                         "@modelcontextprotocol/sdk":  "1.32.1",
+                         "@x402/core":  "2.28.0",
+                         "@x402/evm":  "2.28.0",
+                         "viem":  "2.57.4",
+                         "zod":  "4.6.5"
+                     },
+    "description":  "Live crypto market data and Hyperliquid wallet reports as MCP tools, paid per call with x402 (USDC on Base).",
+    "bin":  {
+                "crypto-market-data-mcp":  "index.js"
+            },
+    "files":  [
+                  "index.js",
+                  "README.md",
+                  "server.json",
+                  "LICENSE"
+              ],
+    "keywords":  [
+                     "mcp",
+                     "mcp-server",
+                     "x402",
+                     "crypto",
+                     "market-data",
+                     "hyperliquid",
+                     "binance",
+                     "liquidations",
+                     "whales",
+                     "ai-agents"
+                 ],
+    "license":  "MIT",
+    "engines":  {
+                    "node":  "\u003e=18"
+                },
+    "mcpName":  "io.github.zaffy18/crypto-market-data",
+    "repository":  {
+                       "type":  "git",
+                       "url":  "git+https://github.com/zaffy18/crypto-market-data-mcp.git"
+                   },
+    "homepage":  "https://github.com/zaffy18/crypto-market-data-mcp#readme"
+}
