@@ -17,8 +17,12 @@ import { registerExactEvmScheme } from "@x402/evm/exact/client";
 const API = (process.env.CMD_API_URL || "https://crypto-market-data.zafermemon87.workers.dev").replace(/\/$/, "");
 const USDC_UNITS = 1e6;
 const FREE = { "/v1/prices": "/free/prices", "/v1/sentiment": "/free/sentiment" }; // free, 15-minute copies
-const maxPerCall = Math.round(Number(process.env.X402_MAX_PER_CALL_USD || "0.01") * USDC_UNITS);
-const maxTotal = Math.round(Number(process.env.X402_MAX_TOTAL_USD || "1.00") * USDC_UNITS);
+function cap(name, dflt) {
+  const v = Number((process.env[name] || "").trim() || dflt);
+  return Number.isFinite(v) && v >= 0 ? Math.round(v * USDC_UNITS) : 0; // an unreadable cap pays nothing, never "no limit"
+}
+const maxPerCall = cap("X402_MAX_PER_CALL_USD", "0.01");
+const maxTotal = cap("X402_MAX_TOTAL_USD", "1.00");
 let spent = 0;
 
 let payer = null;
@@ -51,8 +55,8 @@ async function call(path, query) {
     "holding a little USDC on Base (no ETH needed), or use the same data on Apify: https://apify.com/zaffy_93/crypto-market-data");
   const required = pay.getPaymentRequiredResponse((n) => first.headers.get(n), await first.json().catch(() => undefined));
   const amount = Number(required.accepts[0].amount);
-  if (amount > maxPerCall) return fail(`Price ${amount / USDC_UNITS} USDC is above X402_MAX_PER_CALL_USD; not paid.`);
-  if (spent + amount > maxTotal) return fail(`Session budget X402_MAX_TOTAL_USD reached (${spent / USDC_UNITS} USDC spent); not paid.`);
+  if (!(amount > 0) || amount > maxPerCall) return fail(`Price ${amount / USDC_UNITS} USDC is above X402_MAX_PER_CALL_USD (${maxPerCall / USDC_UNITS}); not paid.`);
+  if (spent + amount > maxTotal) return fail(`Session budget X402_MAX_TOTAL_USD (${maxTotal / USDC_UNITS}) reached (${spent / USDC_UNITS} USDC spent); not paid.`);
   const payload = await pay.createPaymentPayload(required);
   const paid = await fetch(url, { headers: pay.encodePaymentSignatureHeader(payload) });
   const body = await paid.json().catch(() => ({}));
@@ -61,7 +65,7 @@ async function call(path, query) {
   return paid.ok ? text(body) : fail(`Not answered (${paid.status}), not charged: ${body.error || JSON.stringify(body)}`);
 }
 
-const server = new McpServer({ name: "crypto-market-data", version: "0.1.0" });
+const server = new McpServer({ name: "crypto-market-data", version: "0.1.1" });
 const tokens = z.string().optional().describe("Comma-separated tickers such as BTC,ETH,SOL (up to 50). Empty means the top 50 coins.");
 const token = z.string().optional().describe("One ticker such as BTC");
 const limit = z.number().int().min(1).max(200).optional().describe("How many rows");

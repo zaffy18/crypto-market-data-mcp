@@ -21,6 +21,10 @@ Data refreshes every minute from 24/7 monitoring of Binance spot and futures, Hy
 
 ## Install
 
+Claude Desktop, one click: download
+[crypto-market-data.mcpb](https://github.com/zaffy18/crypto-market-data-mcp/releases/latest/download/crypto-market-data.mcpb)
+and open it. The wallet key is optional and is stored in your system keychain.
+
 Claude Code:
 
 ```

@@ -1,0 +1,77 @@
+{
+  "manifest_version": "0.3",
+  "name": "crypto-market-data",
+  "display_name": "Crypto Market Data",
+  "version": "0.1.1",
+  "description": "Live crypto market data and Hyperliquid wallet reports for AI agents, paid per call with x402.",
+  "long_description": "Prices, derivatives, order books, liquidations, whale orders, news and sentiment for the top 50 coins, refreshed every minute from 24/7 monitoring of Binance spot and futures, Hyperliquid and 31 news sources, plus enriched reports for any Hyperliquid wallet. Each paid call costs USD 0.003 to 0.01 in USDC on Base, paid from your own wallet within hard spending caps. Without a wallet, prices and sentiment work free with data refreshed every 15 minutes. A call that fails is never charged.",
+  "author": {
+    "name": "Zafer",
+    "url": "https://github.com/zaffy18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zaffy18/crypto-market-data-mcp.git"
+  },
+  "homepage": "https://github.com/zaffy18/crypto-market-data-mcp",
+  "documentation": "https://github.com/zaffy18/crypto-market-data-mcp#readme",
+  "support": "https://github.com/zaffy18/crypto-market-data-mcp/issues",
+  "license": "MIT",
+  "keywords": ["crypto", "market-data", "x402", "hyperliquid", "binance", "liquidations", "whales", "funding-rate", "ai-agents"],
+  "server": {
+    "type": "node",
+    "entry_point": "index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/index.js"],
+      "env": {
+        "X402_PRIVATE_KEY": "${user_config.x402_private_key}",
+        "X402_MAX_PER_CALL_USD": "${user_config.max_per_call_usd}",
+        "X402_MAX_TOTAL_USD": "${user_config.max_total_usd}"
+      }
+    }
+  },
+  "user_config": {
+    "x402_private_key": {
+      "type": "string",
+      "title": "Wallet private key (optional)",
+      "description": "Key of a dedicated wallet holding a little USDC on Base (no ETH needed). Leave empty to use the free tier: prices and sentiment, refreshed every 15 minutes.",
+      "sensitive": true,
+      "required": false
+    },
+    "max_per_call_usd": {
+      "type": "number",
+      "title": "Most to pay for one call (USD)",
+      "description": "No single payment above this.",
+      "default": 0.01,
+      "min": 0,
+      "max": 1,
+      "required": false
+    },
+    "max_total_usd": {
+      "type": "number",
+      "title": "Most to pay per session (USD)",
+      "description": "No more payments after this much in one session.",
+      "default": 1,
+      "min": 0,
+      "max": 100,
+      "required": false
+    }
+  },
+  "tools": [
+    { "name": "prices", "description": "Live prices with 5m/1h/4h/24h change and 24h volume for the top 50 coins (USD 0.003)" },
+    { "name": "derivatives", "description": "Funding rate, futures premium, open interest and long/short ratio per coin (USD 0.003)" },
+    { "name": "orderbook", "description": "Bid-ask spread, order-book imbalance and buyer share per coin (USD 0.003)" },
+    { "name": "liquidations", "description": "Every Binance futures liquidation of the last hour by coin (USD 0.003)" },
+    { "name": "whale_orders", "description": "Biggest market orders of the last hour on Binance and Hyperliquid (USD 0.003)" },
+    { "name": "news", "description": "Top crypto stories now from 31 sources with price reaction (USD 0.003)" },
+    { "name": "sentiment", "description": "Fear and Greed, trending coins, market breadth and mood (USD 0.003)" },
+    { "name": "coin_snapshot", "description": "Everything for one coin (USD 0.005)" },
+    { "name": "hyperliquid_wallet", "description": "Positions, liquidation distance, risk, PnL and volume for any Hyperliquid address (USD 0.01)" },
+    { "name": "service_info", "description": "Free: what is offered and what this session has spent" }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": { "node": ">=18.0.0" }
+  }
+}

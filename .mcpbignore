@@ -1,0 +1,7 @@
+/.git/
+/.gitignore
+/.mcpbignore
+/test/
+/dist/
+/*.mcpb
+/.npmrc

@@ -33,6 +33,12 @@ const capped = await session({ X402_PRIVATE_KEY: "0x" + "1".repeat(64), X402_MAX
 const r = await capped.callTool({ name: "prices", arguments: { tokens: "BTC" } });
 check("price above the per-call cap is refused, not paid", r.isError && textOf(r).includes("above X402_MAX_PER_CALL_USD"), textOf(r));
 await capped.close();
+for (const [name, value] of [["X402_MAX_PER_CALL_USD", "$0.01"], ["X402_MAX_TOTAL_USD", "one"], ["X402_MAX_TOTAL_USD", "-5"]]) {
+  const bad = await session({ X402_PRIVATE_KEY: "0x" + "1".repeat(64), [name]: value });
+  const res = await bad.callTool({ name: "prices", arguments: { tokens: "BTC" } });
+  check(`unreadable cap ${name}=${value} pays nothing`, res.isError && textOf(res).includes("not paid"), textOf(res));
+  await bad.close();
+}
 
 if (process.argv.includes("--paid")) {
   const key = JSON.parse(readFileSync(new URL("../../buyer_wallet.json", import.meta.url), "utf8")).privateKey;
