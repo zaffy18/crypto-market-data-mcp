@@ -17,7 +17,7 @@ const textOf = (r) => r.content?.[0]?.text ?? "";
 
 const c = await session({ X402_PRIVATE_KEY: "" });
 const names = (await c.listTools()).tools.map((t) => t.name).sort();
-check("10 tools listed", names.length === 10, names.join(","));
+check("13 tools listed", names.length === 13, names.join(","));
 const local = (f) => JSON.parse(readFileSync(new URL("../" + f, import.meta.url), "utf8"));
 const manifest = local("manifest.json"), pkg = local("package.json"), card = local("server.json");
 check("bundle manifest lists exactly the tools the server registers", manifest.tools.map((t) => t.name).sort().join() === names.join(),
@@ -33,6 +33,15 @@ const freeBody = freeAns.isError ? {} : JSON.parse(textOf(freeAns));
 check("without a wallet, prices come free (15-minute copy)", freeBody.free === true && freeBody.rows?.length === 1, textOf(freeAns).slice(0, 200));
 const nowallet = await c.callTool({ name: "liquidations", arguments: {} });
 check("premium tool without a wallet explains how to pay", nowallet.isError && textOf(nowallet).includes("X402_PRIVATE_KEY"), textOf(nowallet));
+const watchTool = (await c.listTools()).tools.find((t) => t.name === "create_watch");
+const live = JSON.parse(textOf(info)).watch?.body?.properties?.conditions?.items?.properties?.metric?.enum ?? [];
+const ours = watchTool?.inputSchema?.properties?.conditions?.items?.properties?.metric?.enum ?? [];
+check("create_watch metrics = the live API's metrics", live.length > 0 && [...ours].sort().join() === [...live].sort().join(), `${ours.length} vs ${live.length}`);
+const nowatch = await c.callTool({ name: "create_watch", arguments: { conditions: [{ token: "BTC", metric: "price", op: "above", value: 1 }] } });
+check("create_watch without a wallet explains how to pay", nowatch.isError && textOf(nowatch).includes("X402_PRIVATE_KEY"), textOf(nowatch));
+const unknown = await c.callTool({ name: "watch_status", arguments: { watch_id: "w_nope", secret: "x" } });
+check("watch_status with an unknown watch: an error, free", unknown.isError && textOf(unknown).includes("404"), textOf(unknown));
+check("default per-call cap is 0.02 (the price of a watch)", JSON.parse(textOf(info)).session.max_per_call_usdc === 0.02);
 await c.close();
 
 const capped = await session({ X402_PRIVATE_KEY: "0x" + "1".repeat(64), X402_MAX_PER_CALL_USD: "0.001" });
@@ -48,14 +57,20 @@ for (const [name, value] of [["X402_MAX_PER_CALL_USD", "$0.01"], ["X402_MAX_TOTA
 
 if (process.argv.includes("--paid")) {
   const key = JSON.parse(readFileSync(new URL("../../buyer_wallet.json", import.meta.url), "utf8")).privateKey;
-  const p = await session({ X402_PRIVATE_KEY: key, X402_MAX_TOTAL_USD: "0.01" });
+  const p = await session({ X402_PRIVATE_KEY: key, X402_MAX_TOTAL_USD: "0.03" });
   const ok = await p.callTool({ name: "prices", arguments: { tokens: "BTC,ETH" } });
   const body = ok.isError ? {} : JSON.parse(textOf(ok));
   check("paid call returns live data", !ok.isError && body.rows?.length === 2 && body.charged === true, textOf(ok).slice(0, 200));
   const bad = await p.callTool({ name: "coin_snapshot", arguments: { token: "NOPE" } });
   check("bad input is answered with an error and not charged", bad.isError && textOf(bad).includes("not charged"), textOf(bad).slice(0, 200));
+  const w = await p.callTool({ name: "create_watch", arguments: { conditions: [{ token: "*", metric: "whale_order_usd", op: "above", value: 1000000 }], label: "smoke" } });
+  const wb = w.isError ? {} : JSON.parse(textOf(w));
+  check("paid create_watch returns an id and secret", /^w_/.test(wb.watch_id || "") && /^[0-9a-f]{64}$/.test(wb.secret || "") && wb.charged === true, textOf(w).slice(0, 200));
+  const st = JSON.parse(textOf(await p.callTool({ name: "watch_status", arguments: { watch_id: wb.watch_id, secret: wb.secret } })));
+  const stop = JSON.parse(textOf(await p.callTool({ name: "stop_watch", arguments: { watch_id: wb.watch_id, secret: wb.secret } })));
+  check("watch_status shows it active; stop_watch stops it", st.status === "active" && stop.status === "stopped", `${st.status} ${stop.status}`);
   const s = JSON.parse(textOf(await p.callTool({ name: "service_info", arguments: {} }))).session;
-  check("session spend counts only the successful call", s.spent_usdc === 0.003, JSON.stringify(s));
+  check("session spend counts only the successful calls (0.003 + 0.02)", s.spent_usdc === 0.023, JSON.stringify(s));
   await p.close();
 }
 console.log(`\n${pass}/${pass + fail} passed`);

@@ -7,7 +7,7 @@
     "url": "https://github.com/zaffy18/crypto-market-data-mcp",
     "source": "github"
   },
-  "version": "0.1.2",
+  "version": "0.1.3",
   "remotes": [
     {
       "type": "streamable-http",
@@ -18,7 +18,7 @@
     {
       "registryType": "npm",
       "identifier": "crypto-market-data-mcp",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "transport": {
         "type": "stdio"
       },
@@ -31,7 +31,7 @@
         },
         {
           "name": "X402_MAX_PER_CALL_USD",
-          "description": "No single payment above this (default 0.01)",
+          "description": "No single payment above this (default 0.02, the price of a watch)",
           "isRequired": false,
           "isSecret": false
         },

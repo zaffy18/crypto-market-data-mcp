@@ -15,6 +15,9 @@ subscription, and a call that fails is never charged.
 | `sentiment` | Fear and Greed, trending coins, breadth, mood | $0.003 |
 | `coin_snapshot` | All of the above for one coin | $0.005 |
 | `hyperliquid_wallet` | Positions, liquidation distance, risk label, PnL, volume for any address | $0.01 |
+| `create_watch` | Up to 10 conditions (price, % change, funding, open interest, liquidations, order book, Fear and Greed, whale orders, news impact) checked every minute for 24 hours; a signed webhook when one happens | $0.02 |
+| `watch_status` | A watch's status and its last 20 fires | free |
+| `stop_watch` | Stop a watch | free |
 | `service_info` | What is offered and what this session has spent | free |
 
 Data refreshes every minute from 24/7 monitoring of Binance spot and futures, Hyperliquid and 31 news sources.
@@ -58,7 +61,7 @@ gasless. Use a dedicated wallet with a small balance.
 
 ## Spending limits
 
-- `X402_MAX_PER_CALL_USD` (default `0.01`): no single payment above this.
+- `X402_MAX_PER_CALL_USD` (default `0.02`, the price of a watch): no single payment above this.
 - `X402_MAX_TOTAL_USD` (default `1.00`): no more payments after this much in a session.
 
 Without a key, `prices` and `sentiment` work free, with data refreshed every 15 minutes. `service_info` works too,
